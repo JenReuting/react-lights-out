@@ -27,18 +27,24 @@ import "./Board.css";
  *
  **/
 
-function Board({ nrows, ncols, chanceLightStartsOn }) {
+function Board({ nrows=4, ncols = 3, chanceLightStartsOn = .5 }) {
   const [board, setBoard] = useState(createBoard());
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
   function createBoard() {
-
-    let initialBoard = new Array(ncols).fill(false);
-
-    return initialBoard;
+    let gameBoard = [];
+    for (let i = 0; i < rows; i++) {
+      let row = [];
+      for (let j = 0; j < ncols; j++) {
+        row.push(Math.random()<chanceLightStartsOn);
+      }
+      gameBoard.push(row)
+    }
+    return gameBoard;
   }
 
   function hasWon() {
+    return board.every((row)=>row.every((cell)=> cell===false));
     // TODO: check the board in state to determine whether the player has won.
   }
 
@@ -46,8 +52,6 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
    * coordinates and then return the new board:
    */
   function flipCellsAround(coord) {
-
-
     setBoard(oldBoard => {
       const [y, x] = coord.split("-").map(Number);
 
@@ -60,26 +64,39 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
       };
 
       // TODO: Make a (deep) copy of the oldBoard
-      const boardCopy = oldBoard.map(row => [...row]);
-      console.log("old board copy---->", boardCopy)
+      const newBoard = _.cloneDeep(oldBoard);
 
       // TODO: in the copy, flip this cell and the cells around it
+      const neighboringCells = [
+        [y, x],
+        [y + 1, x],
+        [y - 1, x],
+        [y, x + 1],
+        [y, x - 1],
+      ];
 
-
+        for (const [y, x] of neighboringCells) {
+          flipCell(y, x, newBoard);
+      }
       return boardCopy;
 
       // TODO: return the copy
     });
   }
   let htmlBoard = [];
-  for (let y = 0; y < nrows; y++){
-    let row = []
+  for (let y = 0; y < nrows; y++) {
+    let row = [];
     for (let x = 0; x < ncols; x++) {
+      const coordinate = `${x}-${y}`;
       row.push(
-        <Cell />
-      )
+        <Cell
+          key={coordinate}
+          flipCellsAroundMe={flipCellsAround(coordinate)}
+          istLit={false}
+        />
+      );
     }
-      htmlBoard.push(<tr>{row}</tr>)
+    htmlBoard.push(<tr key={y} >{row}</tr>);
   }
 
 
@@ -95,8 +112,10 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
     <table className="Board">
       <tbody>{htmlBoard}</tbody>
     </table>
-  )
+  );
 
+  const winGame = <span>"You Won"</span>
+  return hasWon() ? winGame : boardUI
 
   // TODO
 }
