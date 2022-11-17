@@ -32,8 +32,9 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
   function createBoard() {
-    let initialBoard = [];
-    // TODO: create array-of-arrays of true/false values
+
+    let initialBoard = new Array(ncols).fill(false);
+
     return initialBoard;
   }
 
@@ -41,7 +42,12 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
     // TODO: check the board in state to determine whether the player has won.
   }
 
+  /** Will check the old board, flip the cells surrounding the given
+   * coordinates and then return the new board:
+   */
   function flipCellsAround(coord) {
+
+
     setBoard(oldBoard => {
       const [y, x] = coord.split("-").map(Number);
 
@@ -54,18 +60,43 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
       };
 
       // TODO: Make a (deep) copy of the oldBoard
+      const boardCopy = oldBoard.map(row => [...row]);
+      console.log("old board copy---->", boardCopy)
 
       // TODO: in the copy, flip this cell and the cells around it
+
+
+      return boardCopy;
 
       // TODO: return the copy
     });
   }
+  let htmlBoard = [];
+  for (let y = 0; y < nrows; y++){
+    let row = []
+    for (let x = 0; x < ncols; x++) {
+      row.push(
+        <Cell />
+      )
+    }
+      htmlBoard.push(<tr>{row}</tr>)
+  }
+
+
+
+
 
   // if the game is won, just show a winning msg & render nothing else
 
   // TODO
 
   // make table board
+  return (
+    <table className="Board">
+      <tbody>{htmlBoard}</tbody>
+    </table>
+  )
+
 
   // TODO
 }
